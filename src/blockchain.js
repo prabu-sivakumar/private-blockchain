@@ -203,19 +203,18 @@ class Blockchain {
     validateChain() {
         let self = this;
         let errorLog = [];
-        return new Promise(async (resolve) => {
-            if (self.height > 0) {
-                for (var blockIndex = 1; blockIndex <= self.height; blockIndex++) {
-                    let block = self.chain[blockIndex];
-                    let isValid = await block.validate();
-                    if (!isValid) {
-                        errorLog.push("Block with hash value " + block.hash + " is invalid");
-                    } else if (block.previousBlockHash != self.chain[i - 1].hash) {
-                        errorLog.push("Previous Block Hash " + block.previousBlockHash + " does not match " + self.chain[i - 1].hash);
+        return new Promise((resolve) => {
+            self.chain.forEach((block, blockIndex) => {
+                if(block.height > 0) {
+                    const previousBlock = self.chain[index-1];
+                    if(block.previousBlockHash != previousBlock.hash) {
+                        errorLog.push("Previous Block hash " + block.previousBlockHash + " does not match " + previousBlock.hash);
+                    } else if(block.validate()) {
+                        errorLog.push("Block with hash value "+ block.hash +" is invalid");
                     }
                 }
-            }
-            resolve(errorLog);
+                resolve(errorLog);
+            });
         });
     }
 }
